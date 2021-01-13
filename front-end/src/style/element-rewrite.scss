@@ -1,0 +1,177 @@
+/*公共样式*/
+
+.daydao-app {
+    /*ele-table样式重写*/
+    .el-table {
+        border-top:1px solid #EBEEF5;
+        font-size: 14px;
+
+        th .cell {
+            font-size: 14px;
+            color:#222;
+        }
+        td {
+            border: none;
+        }
+        th,
+        td {
+            padding: 8px 0;
+        }
+        td .cell{
+            color: #666666;
+        }
+    }
+    /*重写dialog*/
+    .el-dialog {
+        border-radius: 8px;
+        .el-dialog__header {
+            padding-bottom: 16px;
+        }
+        .el-dialog__title {
+            font-size: 16px;
+            letter-spacing: 0.59px;
+            font-weight: 600;
+        }
+    }
+    .el-form-item{
+        margin-bottom: 15px;
+        .el-upload__tip{
+            line-height: 18px;
+        }
+    }
+    .el-form-item__label {
+        font-size: 14px;
+    }
+
+    // 重置富文本编辑器样式
+    .quill-editor {
+        min-height: 250px;
+        margin-bottom: 20px;
+        .ql-container {
+            min-height: inherit;
+        }
+    }
+    // 导航hover样式重置
+    .el-submenu__title {
+        &:hover {
+            background: none !important;
+        }
+        .el-submenu__icon-arrow {
+            top: 58%;
+        }
+    }
+    //禁用的按钮状态
+    .el-button.is-disabled,
+    .el-button.is-disabled:hover,
+    .el-button.is-disabled:focus {
+        opacity: 0.7;
+    }
+
+    .el-select-dropdown__item {
+        font-size: 12px;
+    }
+
+    .el-drawer__header {
+        font-size: 18px;
+    }
+
+    .el-dropdown-menu__item {
+        font-size: 12px !important;
+    }
+
+    .el-menu-item-group {
+        .el-menu-item-group__title {
+            padding: 0;
+        }
+    }
+
+    a:hover {
+        text-decoration: none;
+    }
+
+    .el-popover {
+        background-color: rgba(0, 0, 0, .85) !important;
+        color: #fff !important;
+        .el-popover__title {
+            color: #fff;
+        }
+    }
+
+    .el-tooltip__popper {
+        background-color: rgba(0, 0, 0, .85) !important;
+        color: #fff !important;
+    }
+
+
+    .el-dialog-btns {
+        .el-button--default {
+            margin-right: 30%;
+        }
+    }
+
+
+    .el-tooltip__popper.is-dark {
+        background: rgba(0, 0, 0, .85);
+    }
+
+    .el-dropdown-menu {
+        .el-dropdown-menu__item {
+            min-width: 130px;
+            padding: 0 22px;
+            &.is-disabled {
+                cursor: not-allowed;
+                opacity: 0.3;
+            }
+        }
+    }
+
+
+    .el-tabs__active-bar {
+        height: 1px;
+    }
+
+    .el-table--enable-row-hover .el-table__body tr:hover>td{
+        background-color: #ccfdff;
+    }
+}
+
+/*重写dialog*/
+.el-dialog {
+    border-radius: 8px;
+    .el-dialog__header {
+        border-bottom: 1px solid $--color-text-placeholder;
+        padding-bottom: 16px;
+    }
+    .el-dialog__title {
+        font-size: 16px;
+        color: $--color-text-primary;
+        letter-spacing: 0.59px;
+        font-weight: 600;
+    }
+}
+// 鼠标移入el-tag才显示删除图标，默认不显示X
+.el-dialog__wrapper {
+    .el-tag {
+        padding-left: 20px;
+        i {
+            opacity: 0;
+            margin-left: -8px;
+            font-size: 16px;
+            &.el-tag__close {
+                &:hover {
+                    color: $--color-primary;
+                }
+            }
+        }
+        &:hover {
+            i {
+                opacity: 1;
+                background: transparent;
+            }
+        }
+    }
+}
+.el-dialog__body{
+    padding: 20px 20px;
+}
+

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+    <h1>接口调试页面</h1>
+    <script src="js/axios.min.js"></script>
+    <script>
+        // 封装获取 cookie 的方法
+        function getCookie(name){
+            var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+            if(arr=document.cookie.match(reg))
+            return unescape(arr[2]);
+            else
+            return null;
+        }
+
+        // axios({
+        //     url:'/apiI18n/getJson?id=1'
+        // })
+
+        axios({
+            url:'/getTypeList',
+            headers:{
+                'x-csrf-token': getCookie("csrfToken"), // 前后端不分离的情况加每次打开客户端，egg会直接在客户端的 Cookie 中写入密钥 ，密钥的 Key 就是 'scrfToken' 这个字段，所以直接获取就好了
+            },
+            method:'get',
+            data:{
+                // id: '1',
+                json_str:JSON.stringify([{a:'1'}]),
+                type:'1'
+            }
+        })
+    </script>
+</body>
+</html>

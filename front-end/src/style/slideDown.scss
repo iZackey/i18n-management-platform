@@ -1,0 +1,26 @@
+.slideDown-enter-active {
+    animation: slideDown-in .3s;
+}
+.slideDown-leave-active {
+    animation: slideDown-out 0s;
+}
+@keyframes slideDown-in {
+    0% {
+      transform-origin: 0% 0%;
+      transform: scaleY(.2);
+    }
+    100% {
+      transform-origin: 0% 0%;
+      transform: scaleY(1);
+    }
+}
+@keyframes slideDown-out {
+    0% {
+      transform-origin: 0% 0%;
+      transform: scaleY(1);
+    }
+    100% {
+      transform-origin: 0% 0%;
+      transform: scaleY(.8);
+    }
+}
