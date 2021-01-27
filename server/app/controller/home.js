@@ -10,7 +10,8 @@ class HomeController extends Controller {
     //默认首页
     async index() {
         const { ctx } = this;
-        const result = await ctx.curl('/public/index.html', {
+        const requestUrl = 'http://127.0.0.1:7001/public/index.html'; //内网请求当前项目中的 /public/index.html文件
+        const result = await ctx.curl(requestUrl, {
             // 必须指定 method
             method: 'GET',
             dataType:'text'

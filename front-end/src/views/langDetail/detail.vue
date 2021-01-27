@@ -40,18 +40,18 @@
                        <el-button size="small" slot="append" icon="el-icon-search" @click="handlerSearch"></el-button>
                    </el-input>
                </div>
-               <el-button type="primary" size="small" @click="previewJson('zh')">预览JSON</el-button>
+               <el-button type="primary" size="small" @click="previewJson()">预览&导出JSON</el-button>
 
-               <el-dropdown size="small">
+         <!-- <el-dropdown size="small">
                    <el-button type="primary" size="small">
-                       导出JSON<i class="el-icon-arrow-down el-icon--right"></i>
+                       导出JSON<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>
                    </el-button>
                    <el-dropdown-menu slot="dropdown">
                        <el-dropdown-item @click.native="downLoad('zh')">导出简体中文</el-dropdown-item>
                        <el-dropdown-item @click.native="downLoad('zh-hk')">导出繁体中文</el-dropdown-item>
                        <el-dropdown-item @click.native="downLoad('en')">导出英文</el-dropdown-item>
                    </el-dropdown-menu>
-               </el-dropdown>
+               </el-dropdown>-->
            </div>
         </div>
 
@@ -256,17 +256,33 @@
             title="预览json"
             :visible.sync="previewJsonObj.isShow"
             :close-on-click-modal="false"
-            width="1200px"
+            width="90%"
             v-dialogDrag
         >
             <div :class="prefixCls + '-preview-json-text'">
                 <ul class="title">
-                    <li>中文json <a href="javascript:void (0)" @click="copyText(previewJsonObj.jsonStrZh)">复制代码</a></li>
-                    <li>英文json <a href="javascript:void (0)" @click="copyText(previewJsonObj.jsonStrEn)">复制代码</a></li>
+                    <li>
+                        中文json
+                        <a href="javascript:void (0)" @click="copyText(previewJsonObj.jsonStrZh)">复制代码</a>
+                        <a href="javascript:void (0)" @click="downloadFile('zh.json', previewJsonObj.jsonStrZh)">下载JSON</a>
+                    </li>
+                    <li>
+                        繁体中文json
+                        <a href="javascript:void (0)" @click="copyText(previewJsonObj.jsonStrZhHk)">复制代码</a>
+                        <a href="javascript:void (0)" @click="downloadFile('zh-hk.json', previewJsonObj.jsonStrZhHk)">下载JSON</a>
+                    </li>
+                    <li>
+                        英文json
+                        <a href="javascript:void (0)" @click="copyText(previewJsonObj.jsonStrEn)">复制代码</a>
+                        <a href="javascript:void (0)" @click="downloadFile('en.json', previewJsonObj.jsonStrEn)">下载JSON</a>
+                    </li>
                 </ul>
                 <ul>
                     <li>
                         <el-input type="textarea" v-model="previewJsonObj.jsonStrZh" :rows="20" autofocus spellcheck="false" readonly></el-input>
+                    </li>
+                    <li>
+                        <el-input type="textarea" v-model="previewJsonObj.jsonStrZhHk" :rows="20" autofocus spellcheck="false" readonly></el-input>
                     </li>
                     <li>
                         <el-input type="textarea" v-model="previewJsonObj.jsonStrEn" :rows="20" autofocus spellcheck="false" readonly></el-input>
@@ -637,7 +653,6 @@
             },
 
             getDetail(callback, isWidthoutLoading) {
-                console.log('isWidthoutLoading',isWidthoutLoading)
                 if(!isWidthoutLoading){
                     this.isLoading = true
                 }
@@ -1204,7 +1219,13 @@
                         }).then(json => {
                             if(json.result == 'true'){
                                 const data = Utils.fieldsArrToJsonList(json.jsonList, 'zh');
-                                resolve(this.formatJsonStr(JSON.stringify(data)));
+                                // const data = {};
+                                const dataZhHk = Utils.fieldsArrToJsonList(json.jsonList, 'zh-hk');
+                                console.log('dataZhHk',dataZhHk)
+                                resolve({
+                                    zh: this.formatJsonStr(JSON.stringify(data)),
+                                    zhHk: this.formatJsonStr(JSON.stringify(dataZhHk)),
+                                });
                             }
                         })
                     })
@@ -1229,11 +1250,12 @@
                 }
 
                 this.isLoading = true;
-                Promise.all([getZh(), getEn()]).then(([zh, en]) => {
+                Promise.all([getZh(), getEn()]).then(([zhOrZhHkObj, en]) => {
                     this.isLoading = false;
                     let previewJsonObj = this.previewJsonObj;
                     previewJsonObj.isShow = true;
-                    previewJsonObj.jsonStrZh = zh;
+                    previewJsonObj.jsonStrZh = zhOrZhHkObj.zh;
+                    previewJsonObj.jsonStrZhHk = zhOrZhHkObj.zhHk;
                     previewJsonObj.jsonStrEn = en;
                 }).catch(() => {});
 
@@ -1462,8 +1484,10 @@
                     color:#555;
                     line-height: 22px;
                     margin-bottom: 5px;
+
                     a{
                         color: blue;
+                        margin-left: 10px;
                         &:hover{
                             text-decoration: underline;
                         }

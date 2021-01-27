@@ -4,11 +4,11 @@
             <h1>多语言包管理平台</h1>
 
             <el-form-item label="帐号" prop="account">
-                <el-input type="text" v-model="ruleForm.account" placeholder="daydao手机号、注册邮箱" @keyup.native.enter="submitForm"></el-input>
+                <el-input type="text" v-model="ruleForm.account" :placeholder="'daydao手机号' + (isShowRegister?'、注册邮箱':'')" @keyup.native.enter="submitForm"></el-input>
             </el-form-item>
 
             <el-form-item label="密码" prop="password" style="margin-bottom:15px!important;">
-                <el-input type="password" v-model="ruleForm.password" placeholder="daydao登录密码、注册密码" @keyup.native.enter="submitForm"></el-input>
+                <el-input type="password" v-model="ruleForm.password" :placeholder="'daydao登录密码' + (isShowRegister?'、注册密码':'')" @keyup.native.enter="submitForm"></el-input>
             </el-form-item>
 
             <el-form-item label="" style="margin-bottom:5px!important;">
@@ -19,7 +19,7 @@
                 <el-button type="primary" @click="submitForm" :loading="isLoading" style="margin-right:20px;">登录</el-button>
                 <el-button @click="resetForm('ruleForm')">重置</el-button>
 
-                <div class="text-btn-wrapper">
+                <div class="text-btn-wrapper" v-if="isShowRegister">
                     <el-button type="text" class="text-btn" @click="$router.push('/register')">注册</el-button>
                     <el-button type="text" class="text-btn">忘记密码</el-button>
                 </div>
@@ -51,7 +51,8 @@
                         { required: true, message: '请输入密码', trigger: 'blur' }
                     ]
                 },
-                isRemenberPass: true
+                isRemenberPass: true,
+                isShowRegister: true
             }
         },
 
@@ -61,6 +62,9 @@
             }
             if(localStorage.getItem('login-password')){
                 this.ruleForm.password = window.atob(localStorage.getItem('login-password'));
+            }
+            if(location.hostname.indexOf('.daydao.com') != -1){
+                this.isShowRegister = false;
             }
         },
 

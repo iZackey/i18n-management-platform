@@ -347,7 +347,8 @@ const Utils = {
     /**
      * 字段数组转json
      * */
-    fieldsArrToJsonList(list, lib_lang) {
+    fieldsArrToJsonList(paramsList = {}, lib_lang) {
+        let list = JSON.parse(JSON.stringify(paramsList));
         let jsonList = {};
         let realityLang = lib_lang === 'zh-hk' ? 'zh' : lib_lang;
 
