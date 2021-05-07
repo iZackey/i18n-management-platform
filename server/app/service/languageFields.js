@@ -139,7 +139,20 @@ class LanguageFieldsService extends Service {
         let offset = (query.pageNo? parseInt(query.pageNo) - 1 : 0) * parseInt(query.pageSize); // 数据偏移量
         let limit = parseInt(query.pageSize); // 返回数据量
         let query_parent_id = String(query.parent_id || '');
-        let where = ' where `lib_id` = ? ' + (query_parent_id? ' and (`parent_id` = \'' + query_parent_id + '\' or `parent_id` REGEXP \'^'+query_parent_id+',\' )' :' ') + (query.keyword? ' and  (`key` like \"%'+query.keyword+'%\" or `zh` like \"%'+query.keyword+'%\" )':' ');
+
+        let keywordMatch = '';
+        const keywordStr = (query.keyword || '').trim();
+        //如果关键词不为空
+        if(keywordStr){
+            //如果是精确匹配
+            if(query.is_exact_match == 1){
+                keywordMatch = ' and  (`key` = \"'+ keywordStr +'\" or `zh` = \"'+ keywordStr +'\" )';
+            }else{
+                keywordMatch = ' and  (`key` like \"%'+ keywordStr +'%\" or `zh` like \"%'+ keywordStr +'%\" )';
+            }
+        }
+
+        let where = ' where `lib_id` = ? ' + (query_parent_id? ' and (`parent_id` = \'' + query_parent_id + '\' or `parent_id` REGEXP \'^'+query_parent_id+',\' )' :' ') + keywordMatch;
         let whereArr = [
             query.lib_id
         ];
@@ -282,12 +295,12 @@ class LanguageFieldsService extends Service {
     async findHistoryTranslate(query){
         let offset = (query.pageNo? parseInt(query.pageNo) - 1 : 0) * parseInt(query.pageSize); // 数据偏移量
         let limit = parseInt(query.pageSize); // 返回数据量
-        let zhLike = `zh like '%${query.keyword}%'`;
+        let zhLike = `(\`zh\` like "%${query.keyword}%" or \`key\` like "%${query.keyword}%") `;
         if(query.historySearchType == '2'){
-            zhLike = `zh = '${query.keyword}'`;
+            zhLike = `(\`zh\` = "${query.keyword}" or \`key\` = "${query.keyword}") `;
         }
-        let where = ` where ${zhLike} and id != ${query.id} and is_has_children = 0  `;
-        const result = await this.app.mysql.query('select * from ' + fieldsTbName + where +' order by id desc ' + ' LIMIT '+offset+','+limit);
+        let where = ` where ${zhLike} and \`id\` != ${query.id} and \`is_has_children\` = 0  `;
+        const result = await this.app.mysql.query('select * from ' + fieldsTbName + where +' order by \`id\` desc ' + ' LIMIT '+offset+','+limit);
         const resultCount = await this.app.mysql.query('select count(`id`) as `total` from ' + fieldsTbName + where);
         if (result && Array.isArray(resultCount) && resultCount.length) {
             return {

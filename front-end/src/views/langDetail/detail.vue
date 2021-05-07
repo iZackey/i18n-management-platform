@@ -34,7 +34,8 @@
                <div class="search-wrapper">
                    <el-input size="small" clearable placeholder="请输入关键词搜索" @keyup.native.enter="handlerSearch" v-model="keyword" @clear="handlerSearch" class="input-with-select">
                        <el-select v-model="searchType" slot="prepend" placeholder="请选择" style="width: 100px; text-align: center;">
-                           <el-option label="包内搜索" value="1"></el-option>
+                           <el-option label="精确搜索" value="0"></el-option>
+                           <el-option label="模糊搜索" value="1"></el-option>
                            <el-option label="全局搜索" value="2"></el-option>
                        </el-select>
                        <el-button size="small" slot="append" icon="el-icon-search" @click="handlerSearch"></el-button>
@@ -344,6 +345,9 @@
                         label="字段名"
                         width="100"
                         >
+                        <template slot-scope="scope">
+                            <div style="display: inline;" v-html="scope.row.keyStr"></div>
+                        </template>
                     </el-table-column>
                     <el-table-column
                         prop="lib_name"
@@ -352,7 +356,7 @@
                         >
                     </el-table-column>
                     <el-table-column
-                        prop="zhStr"
+                        prop="zh"
                         label="中文"
                         width="200"
                         >
@@ -445,9 +449,10 @@
                 historyPageSize:20,
                 historyPageNo:1,
                 historyPageTotal:0,
-                searchType: '1', //默认局部搜索
+                searchType: '0', //默认局部搜索
                 historySearchType:'1', //默认模糊匹配，2：精确匹配
                 historyKeyword:'',
+                is_exact_match: '1', //是否精确匹配搜索, 1:是， 0：否
             }
         },
 
@@ -522,7 +527,7 @@
                     ajax({
                         url:'fields/findHistoryTranslate',
                         data:{
-                            keyword: historyRow.zh,
+                            keyword: this.historyKeyword,
                             id: historyRow.id,
                             historySearchType: historyRow.historySearchType, //匹配方式
                             pageSize: Number(this.historyPageSize),
@@ -536,14 +541,16 @@
 
                         if(json.result == 'true'){
 
-                            const regKeyword = new RegExp(historyRow.zh, 'g');
+                            const regKeyword = new RegExp(this.historyKeyword, 'g');
                             this.historyTransData = (json.list || []).map((item,i) => {
                                 return {
                                     ...item,
                                     iIndex: i + 1,
                                     lib_name:obj[item.lib_id],
+                                    keyStr: item.key.replace(regKeyword, ($0, $1) => {
+                                        return '<strong style="color: red;">' + $0 + '</strong>'
+                                    }),
                                     zhStr: item.zh.replace(regKeyword, ($0, $1) => {
-                                        console.log($0,$1);
                                         return '<strong style="color: red;">' + $0 + '</strong>'
                                     })
                             }
@@ -589,10 +596,12 @@
             handlerSearch(){
                 let keyword = this.keyword.trim();
 
-                //局部搜索
-                if(this.searchType == '1'){
+                //包内搜索（如果是模糊搜索或者精确搜索）
+                if(this.searchType == '1' || this.searchType == '0'){
                     this.keyword = keyword;
                     this.pageNo = 1;
+
+                    this.is_exact_match = this.searchType == '0'? '1': '0'; //是否精确匹配搜索，仅限局部包内搜索使用
 
                     //如果url参数中有parentId就删除parentId跳到所有的下面去查询关键词
                     if(this.$route.query.parentId){
@@ -664,7 +673,8 @@
                         parent_id: this.parentId && this.parentId != '0'? this.parentId: '',
                         pageSize: Number(this.pageSize),
                         pageNo: Number(this.pageNo),
-                        keyword: this.keyword
+                        keyword: this.keyword,
+                        is_exact_match: this.is_exact_match, //是否是精确搜索
                     },
                 }).then(json => {
                     if(json.result == 'true'){
@@ -1355,6 +1365,11 @@
                 margin-right: auto !important;
                 margin-left: auto;
             }
+            .el-input-group__append, .el-input-group__prepend{
+                background-color: #0068ff;
+                color: #ffffff;
+                border-color: #0068ff;
+            }
         }
         .change-file-box {
             float: left;
@@ -1506,6 +1521,12 @@
             margin:0 auto;
             margin-bottom: 10px;
             width:50%;
+
+            .el-input-group__append, .el-input-group__prepend{
+                background-color: #0068ff;
+                color: #ffffff;
+                border-color: #0068ff;
+            }
         }
     }
 </style>

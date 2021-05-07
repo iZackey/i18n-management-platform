@@ -100,9 +100,19 @@ class FieldsController extends Controller {
         }
     }
 
+    /**
+     * request.body的可传参数有:
+     * keyword: ""  搜索关键词
+     * lib_id: 37 语言包id
+     * pageNo: 1  当前页码
+     * pageSize: 50 每页条数
+     * parent_id: "" 字段的父级id
+     * is_exact_match: true 是否精确匹配, 默认：是
+     * */
     async getList(){
         const { ctx } = this;
         let query = ctx.request.body;
+        //必传参数校验
         if (!query.pageSize) {
             ctx.body = {
                 result: 'false',
